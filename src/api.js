@@ -7,7 +7,6 @@ export async function getMovies() {
     const res = await fetch(url);
     return await res.json();
   } catch (error) {
-    console.log(error);
     return false;
   }
 }
@@ -19,8 +18,6 @@ export const renderMovieDetail = async (id) => {
 
   movies.forEach((movie) => {
     if (id === movie.show.id) {
-      console.log('call');
-
       const comedyMovie = document.createElement('div');
       const movieTitle = document.createElement('label');
       movieTitle.innerHTML = `${movie.show.name}`;
