@@ -37,6 +37,8 @@
   },
   "homepage": "https://github.com/kelvinbush/kelvin-portfolio#readme",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "jest": "^28.1.1",
+    "lodash": "^4.17.21",
+    "save": "^2.5.0"
   }
 }
