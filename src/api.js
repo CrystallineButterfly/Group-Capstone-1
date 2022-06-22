@@ -63,15 +63,15 @@ export const renderMovieDetail = async (id) => {
 };
 export const renderMovies = async () => {
   const movies = await getMovies();
-  const likes = await getLikes();
+  // const likes = await getLikes();
   displayMovies.innerHTML = '';
   movies.forEach((movie) => {
-    let numLikes = '';
-    likes.forEach((like) => {
-      if (movie.show.id === like.item_id) {
-        numLikes = `${like.likes}`;
-      }
-    });
+    // let numLikes = '';
+    // likes.forEach((like) => {
+    //   if (movie.show.id === like.item_id) {
+    //     numLikes = `${like.likes}`;
+    //   }
+    // });
     const comedyMovie = document.createElement('div');
     const movieTitle = document.createElement('label');
     movieTitle.innerHTML = `${movie.show.name}`;
@@ -83,7 +83,7 @@ export const renderMovies = async () => {
     likeIcon.classList.add('fa-heart');
     const likeLabel = document.createElement('label');
     likeLabel.classList.add('like-label');
-    likeLabel.innerHTML = `${numLikes}likes`;
+    // likeLabel.innerHTML = `${numLikes}likes`;
     const comedyImage = document.createElement('img');
     comedyImage.src = movie.show.image.medium;
     const commentButton = document.createElement('button');
@@ -96,18 +96,18 @@ export const renderMovies = async () => {
     comedyMovie.append(likeLabel);
     comedyMovie.append(commentButton);
     displayMovies.append(comedyMovie);
-    likeIcon.onclick = (e) => {
-      e.preventDefault();
-      addLike(movie.show.id);
-      const newLikes = getLikes();
-      let newNumLikes = '';
-      newLikes.forEach((newLike) => {
-        if (movie.show.id === newLike.item_id) {
-          newNumLikes = `${newLike.likes}`;
-        }
-      });
-      likeLabel.innerHTML = `${newNumLikes}likes`;
-    };
+    // likeIcon.onclick = (e) => {
+    // //   e.preventDefault();
+    // //   addLike(movie.show.id);
+    // //   const newLikes = getLikes();
+    // //   let newNumLikes = '';
+    // //   newLikes.forEach((newLike) => {
+    // //     if (movie.show.id === newLike.item_id) {
+    // //       newNumLikes = `${newLike.likes}`;
+    // //     }
+    // //   });
+    // //   likeLabel.innerHTML = `${newNumLikes}likes`;
+    // // };
     commentButton.onclick = (e) => {
       e.preventDefault();
       renderMovieDetail(movie.show.id);
