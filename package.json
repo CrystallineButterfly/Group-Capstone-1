@@ -21,9 +21,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --open",
-    "build": "webpack"
+    "test": "jest --watchAll --coverage",
+    "start": "webpack serve --open --mode=development",
+    "build": "webpack --mode=development",
+    "watch": "webpack --watch"
   },
   "repository": {
     "type": "git",
