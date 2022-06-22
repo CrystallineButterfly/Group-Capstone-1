@@ -34,3 +34,13 @@ a {
 #footer {
   border-top: solid black 0.25rem;
 }
+
+.comment-div {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-item {
+  margin-bottom: 0.5rem;
+  width: fit-content;
+}
