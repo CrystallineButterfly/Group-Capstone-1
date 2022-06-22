@@ -1,9 +1,8 @@
 const movie = 'crime';
-const appId = 'movielikes';
+const appId = 'sjr62REEoHSKOJ9GoEBf';
 const url = `https://api.tvmaze.com/search/shows?q=${movie}`;
 const displayMovies = document.getElementById('display-Movies');
-const secondUrl = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/${appId}/likes/`;
-
+const secondUrl = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/${appId}/likes`;
 export async function getMovies() {
   try {
     const res = await fetch(url);
@@ -12,21 +11,35 @@ export async function getMovies() {
     return false;
   }
 }
-
-export async function getLikes() {
+export const getLikes = async () => {
   try {
     const res = await fetch(secondUrl);
-    return await res.json();
+    const likes = await res.json();
+    return likes;
+  } catch (error) {
+    return false;
+  }
+};
+export async function addLike(id) {
+  try {
+    const res = await fetch(secondUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        item_id: id,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    return res.json();
   } catch (error) {
     return false;
   }
 }
-
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
   const moviePopup = document.createElement('div');
   moviePopup.innerHTML = '';
-
   movies.forEach((movie) => {
     if (id === movie.show.id) {
       const comedyMovie = document.createElement('div');
@@ -48,18 +61,29 @@ export const renderMovieDetail = async (id) => {
     }
   });
 };
-
 export const renderMovies = async () => {
   const movies = await getMovies();
-  const likesclick = await getLikes();
+  const likes = await getLikes();
   displayMovies.innerHTML = '';
   movies.forEach((movie) => {
+    let numLikes = '';
+    likes.forEach((like) => {
+      if (movie.show.id === like.item_id) {
+        numLikes = `${like.likes}`;
+      }
+    });
     const comedyMovie = document.createElement('div');
     const movieTitle = document.createElement('label');
     movieTitle.innerHTML = `${movie.show.name}`;
     comedyMovie.classList.add('movie-div');
-    const labelLikes = document.createElement('label');
-    labelLikes.innerHTML = `${likesclick.likes}`;
+    const likeIcon = document.createElement('i');
+    likeIcon.id = movie.show.id;
+    likeIcon.classList.add('fas');
+    likeIcon.classList.add('fa-solid');
+    likeIcon.classList.add('fa-heart');
+    const likeLabel = document.createElement('label');
+    likeLabel.classList.add('like-label');
+    likeLabel.innerHTML = `${numLikes}likes`;
     const comedyImage = document.createElement('img');
     comedyImage.src = movie.show.image.medium;
     const commentButton = document.createElement('button');
@@ -68,10 +92,22 @@ export const renderMovies = async () => {
     commentButton.id = movie.show.id;
     comedyMovie.append(movieTitle);
     comedyMovie.append(comedyImage);
+    comedyMovie.append(likeIcon);
+    comedyMovie.append(likeLabel);
     comedyMovie.append(commentButton);
-    comedyMovie.append(labelLikes);
     displayMovies.append(comedyMovie);
-
+    likeIcon.onclick = (e) => {
+      e.preventDefault();
+      addLike(movie.show.id);
+      const newLikes = getLikes();
+      let newNumLikes = '';
+      newLikes.forEach((newLike) => {
+        if (movie.show.id === newLike.item_id) {
+          newNumLikes = `${newLike.likes}`;
+        }
+      });
+      likeLabel.innerHTML = `${newNumLikes}likes`;
+    };
     commentButton.onclick = (e) => {
       e.preventDefault();
       renderMovieDetail(movie.show.id);
