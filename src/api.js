@@ -1,4 +1,4 @@
-const movie = 'crime';
+const movie = 'comedy';
 const appId = 'IWf3COm5aU7E5iifRsF3';
 const url = `https://api.tvmaze.com/search/shows?q=${movie}`;
 const displayMovies = document.getElementById('display-Movies');
@@ -62,11 +62,17 @@ export const renderMovieDetail = async (id) => {
     }
   });
 };
+
 export const renderMovies = async () => {
   const movies = await getMovies();
   const likes = await getLikes();
   displayMovies.innerHTML = '';
+  let counter = 0;
+  const moviesSpan = document.getElementById('movies');
   movies.forEach((movie) => {
+    counter += 1;
+    moviesSpan.innerHTML = `(${counter})`;
+
     let numLikes = '';
     likes.forEach((like) => {
       if (movie.show.id === like.item_id) {
