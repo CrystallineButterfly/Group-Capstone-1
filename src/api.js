@@ -12,6 +12,7 @@ export async function getMovies() {
     return false;
   }
 }
+// This is to add function to get likes from the api
 export const getLikes = async () => {
   try {
     const res = await fetch(secondUrl);
@@ -37,6 +38,7 @@ export async function addLike(id) {
     return false;
   }
 }
+// ends here
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
   const moviePopup = document.createElement('div');
