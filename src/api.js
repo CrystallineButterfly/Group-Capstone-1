@@ -66,7 +66,6 @@ export const getComments = async (id) => {
   }
 };
 
-
 export async function addComment(id) {
   try {
     const res = await fetch(commentUrl, {
@@ -85,26 +84,6 @@ export async function addComment(id) {
     return [];
   }
 }
-
-// export async function addComment(obj) {
-//   console.log("call");
-//   try {
-//     const res = await fetch(commentUrl, {
-//       method: 'POST',
-//       body: JSON.stringify({
-//         item_id: obj.item_id,
-//         username: obj.username,
-//         comment: obj.comment,
-//       }),
-//       headers: {
-//         'Content-type': 'application/json; charset=UTF-8',
-//       },
-//     });
-//     return res.json();
-//   } catch (error) {
-//     return [];
-//   }
-// }
 
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
@@ -158,26 +137,11 @@ export const renderMovieDetail = async (id) => {
       document.body.append(moviePopup);
     }
 
-    // addCommentButton.onclick = (e) => {
-    //   e.preventDefault();
-    //   addComment(movie.show.id);
-    //   commentForm.reset();
-    // };
-
-    addCommentButton.addEventListener('click', async (e) => {
-       e.preventDefault();
-       addComment(movie.show.id);
-       commentForm.reset();
-
-      // const commentObject = {
-      //   item_id: movie.show.id,
-      //   username:
-      //   addCommentButton.previousElementSibling.previousElementSibling.value,
-      //   comment: addCommentButton.previousElementSibling.value,
-      // };
-      // addComment(commentObject);
-      // const comments = await getComments(id);
-    });
+    addCommentButton.onclick = (e) => {
+      e.preventDefault();
+      addComment(movie.show.id);
+      commentForm.reset();
+    };
   });
 };
 
