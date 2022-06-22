@@ -53,11 +53,35 @@ export const renderMovieDetail = async (id) => {
       movieStatus.innerHTML = `${movie.show.status}`;
       const moviePremiered = document.createElement('label');
       moviePremiered.innerHTML = `${movie.show.premiered}`;
+
+      const commentDiv = document.createElement('div');
+      commentDiv.classList.add('comment-div');
+      const commentTitle = document.createElement('h2');
+      commentTitle.classList.add('comment-item');
+      commentTitle.innerHTML = 'Add a comment';
+      const addName = document.createElement('input');
+      addName.classList.add('comment-item');
+      addName.placeholder = 'Your name';
+      const addComment = document.createElement('textarea');
+      addComment.classList.add('comment-item');
+      addComment.placeholder = 'Your insights';
+      const commentButton = document.createElement('button');
+      commentButton.classList.add('comment-item');
+      commentButton.innerHTML = 'Comment';
+
       comedyMovie.append(comedyImage);
       comedyMovie.append(movieTitle);
       comedyMovie.append(movieStatus);
       comedyMovie.append(moviePremiered);
+
+      commentDiv.append(commentTitle);
+      commentDiv.append(addName);
+      commentDiv.append(addComment);
+      commentDiv.append(commentButton);
+      comedyMovie.append(commentDiv);
+
       moviePopup.append(comedyMovie);
+
       document.body.append(moviePopup);
     }
   });
