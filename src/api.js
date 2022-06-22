@@ -1,7 +1,8 @@
 const movie = 'crime';
+const appId = 'sjr62REEoHSKOJ9GoEBf';
 const url = `https://api.tvmaze.com/search/shows?q=${movie}`;
 const displayMovies = document.getElementById('display-Movies');
-
+const secondUrl = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/${appId}/likes`;
 export async function getMovies() {
   try {
     const res = await fetch(url);
@@ -10,12 +11,35 @@ export async function getMovies() {
     return false;
   }
 }
-
+export const getLikes = async () => {
+  try {
+    const res = await fetch(secondUrl);
+    const likes = await res.json();
+    return likes;
+  } catch (error) {
+    return false;
+  }
+};
+export async function addLike(id) {
+  try {
+    const res = await fetch(secondUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        item_id: id,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    return res.json();
+  } catch (error) {
+    return false;
+  }
+}
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
   const moviePopup = document.createElement('div');
   moviePopup.innerHTML = '';
-
   movies.forEach((movie) => {
     if (id === movie.show.id) {
       const comedyMovie = document.createElement('div');
@@ -37,7 +61,6 @@ export const renderMovieDetail = async (id) => {
     }
   });
 };
-
 export const renderMovies = async () => {
   const movies = await getMovies();
   displayMovies.innerHTML = '';
@@ -46,6 +69,13 @@ export const renderMovies = async () => {
     const movieTitle = document.createElement('label');
     movieTitle.innerHTML = `${movie.show.name}`;
     comedyMovie.classList.add('movie-div');
+    const likeIcon = document.createElement('i');
+    likeIcon.id = movie.show.id;
+    likeIcon.classList.add('fas');
+    likeIcon.classList.add('fa-solid');
+    likeIcon.classList.add('fa-heart');
+    const likeLabel = document.createElement('label');
+    likeLabel.classList.add('like-label');
     const comedyImage = document.createElement('img');
     comedyImage.src = movie.show.image.medium;
     const commentButton = document.createElement('button');
@@ -54,9 +84,10 @@ export const renderMovies = async () => {
     commentButton.id = movie.show.id;
     comedyMovie.append(movieTitle);
     comedyMovie.append(comedyImage);
+    comedyMovie.append(likeIcon);
+    comedyMovie.append(likeLabel);
     comedyMovie.append(commentButton);
     displayMovies.append(comedyMovie);
-
     commentButton.onclick = (e) => {
       e.preventDefault();
       renderMovieDetail(movie.show.id);
