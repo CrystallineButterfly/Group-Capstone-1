@@ -16,7 +16,7 @@ describe('Test Adding Likes', () => {
         <button like-id="10428" class="btn-likes"><i class="fas fa-heart"></i></button>
       </div>`;
 
-  const pullLikes = (likeId) => {
+  const getLikes = (likeId) => {
     const countLikes = document.querySelectorAll(`[like-id="${likeId}"]`)[0]
       .previousElementSibling.previousElementSibling.children[1];
     return Number(countLikes.innerHTML);
@@ -32,11 +32,11 @@ describe('Test Adding Likes', () => {
   };
 
   test('expect return number of likes to equal 0', () => {
-    expect(pullLikes(10428)).toBe(0);
+    expect(getLikes(10428)).toBe(0);
   });
 
   test('expect return number of likes to equal 1', () => {
     addLikes(10428);
-    expect(pullLikes(10428)).toBe(1);
+    expect(getLikes(10428)).toBe(1);
   });
 });

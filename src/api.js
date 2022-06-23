@@ -94,11 +94,11 @@ export const renderMovieDetail = async (id) => {
   movies.forEach((movie) => {
     if (id === movie.show.id) {
       const comedyMovie = document.createElement('div');
-      const movieTitle = document.createElement('label');
-      movieTitle.innerHTML = `${movie.show.name}`;
       comedyMovie.classList.add('movie-div');
       const comedyImage = document.createElement('img');
       comedyImage.src = movie.show.image.medium;
+      const movieTitle = document.createElement('label');
+      movieTitle.innerHTML = `${movie.show.name}`;
       const movieStatus = document.createElement('label');
       movieStatus.innerHTML = `${movie.show.status}`;
       const moviePremiered = document.createElement('label');
@@ -107,6 +107,7 @@ export const renderMovieDetail = async (id) => {
       const commentDisplay = document.createElement('h2');
       commentDisplay.innerHTML = 'Comments';
       const commentList = document.createElement('ul');
+      commentList.id = `${movie.show.id}`;
       let commentCounter = 0;
       const commnetNumber = document.createElement('span');
 
