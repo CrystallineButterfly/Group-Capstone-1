@@ -2,26 +2,43 @@ const movie = 'comedy';
 const appId = 'IWf3COm5aU7E5iifRsF3';
 const url = `https://api.tvmaze.com/search/shows?q=${movie}`;
 const displayMovies = document.getElementById('display-Movies');
+const commentUrl = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/${appId}/comments`;
 const secondUrl = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/${appId}/likes`;
+
+const commentForm = document.createElement('form');
+commentForm.classList.add('comment-form');
+const commentTitle = document.createElement('h2');
+commentTitle.classList.add('comment-item');
+commentTitle.innerHTML = 'Add a comment';
+const addNameInput = document.createElement('input');
+addNameInput.classList.add('comment-item');
+addNameInput.placeholder = 'Your name';
+const addCommentInput = document.createElement('textarea');
+addCommentInput.classList.add('comment-item');
+addCommentInput.placeholder = 'Your insights';
+const addCommentButton = document.createElement('button');
+addCommentButton.classList.add('comment-item');
+addCommentButton.innerHTML = 'Comment';
 
 export async function getMovies() {
   try {
     const res = await fetch(url);
     return await res.json();
   } catch (error) {
-    return false;
+    return [];
   }
 }
-// This is to add function to get likes from the api
+
 export const getLikes = async () => {
   try {
     const res = await fetch(secondUrl);
     const likes = await res.json();
     return likes;
   } catch (error) {
-    return false;
+    return [];
   }
 };
+
 export async function addLike(id) {
   try {
     const res = await fetch(secondUrl, {
@@ -35,12 +52,43 @@ export async function addLike(id) {
     });
     return res.json();
   } catch (error) {
-    return false;
+    return [];
   }
 }
-// ends here
+
+export const getComments = async (id) => {
+  try {
+    const res = await fetch(`${commentUrl}?item_id=${id}`);
+    const comments = await res.json();
+    return comments;
+  } catch (error) {
+    return [];
+  }
+};
+
+export async function addComment(id) {
+  try {
+    const res = await fetch(commentUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        item_id: id,
+        username: addNameInput.value,
+        comment: addCommentInput.value,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    return res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
+  const comments = await getComments(id);
+
   const moviePopup = document.createElement('div');
   moviePopup.innerHTML = '';
   movies.forEach((movie) => {
@@ -56,36 +104,44 @@ export const renderMovieDetail = async (id) => {
       const moviePremiered = document.createElement('label');
       moviePremiered.innerHTML = `${movie.show.premiered}`;
 
-      const commentDiv = document.createElement('div');
-      commentDiv.classList.add('comment-div');
-      const commentTitle = document.createElement('h2');
-      commentTitle.classList.add('comment-item');
-      commentTitle.innerHTML = 'Add a comment';
-      const addName = document.createElement('input');
-      addName.classList.add('comment-item');
-      addName.placeholder = 'Your name';
-      const addComment = document.createElement('textarea');
-      addComment.classList.add('comment-item');
-      addComment.placeholder = 'Your insights';
-      const commentButton = document.createElement('button');
-      commentButton.classList.add('comment-item');
-      commentButton.innerHTML = 'Comment';
+      const commentDisplay = document.createElement('h2');
+      commentDisplay.innerHTML = 'Comments';
+      const commentList = document.createElement('ul');
+      if (comments.length > 0) {
+        comments.forEach((comment) => {
+          const singleComment = document.createElement('li');
+          const commentUser = `${comment.username}`;
+          const commentContent = `${comment.comment}`;
+          const commentDate = `${comment.creation_date}`;
+          singleComment.innerHTML = `${commentDate} ${commentUser} : ${commentContent}`;
+          commentList.append(singleComment);
+        });
+      }
 
       comedyMovie.append(comedyImage);
       comedyMovie.append(movieTitle);
       comedyMovie.append(movieStatus);
       comedyMovie.append(moviePremiered);
 
-      commentDiv.append(commentTitle);
-      commentDiv.append(addName);
-      commentDiv.append(addComment);
-      commentDiv.append(commentButton);
-      comedyMovie.append(commentDiv);
+      comedyMovie.append(commentDisplay);
+      comedyMovie.append(commentList);
+
+      commentForm.append(commentTitle);
+      commentForm.append(addNameInput);
+      commentForm.append(addCommentInput);
+      commentForm.append(addCommentButton);
+      comedyMovie.append(commentForm);
 
       moviePopup.append(comedyMovie);
 
       document.body.append(moviePopup);
     }
+
+    addCommentButton.onclick = (e) => {
+      e.preventDefault();
+      addComment(movie.show.id);
+      commentForm.reset();
+    };
   });
 };
 
