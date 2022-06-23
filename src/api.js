@@ -107,8 +107,15 @@ export const renderMovieDetail = async (id) => {
       const commentDisplay = document.createElement('h2');
       commentDisplay.innerHTML = 'Comments';
       const commentList = document.createElement('ul');
+      let commentCounter = 0;
+      const commnetNumber = document.createElement('span');
+
       if (comments.length > 0) {
         comments.forEach((comment) => {
+          commentCounter += 1;
+          commnetNumber.innerHTML = `(${commentCounter})`;
+          commentDisplay.append(commnetNumber);
+
           const singleComment = document.createElement('li');
           const commentUser = `${comment.username}`;
           const commentContent = `${comment.comment}`;
