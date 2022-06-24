@@ -85,13 +85,6 @@ export async function addComment(id) {
   }
 }
 
-export const updateComments = async (id) => {
-  // eslint-disable-next-line no-unused-vars
-  const comments = await getComments(id);
-
-  window.location.reload();
-};
-
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
   const comments = await getComments(id);
@@ -183,9 +176,20 @@ export const renderMovieDetail = async (id) => {
       addCommentButton.onclick = (e) => {
         e.preventDefault();
         addComment(id);
-        commentForm.reset();
 
-        updateComments(id);
+        const today = new Date();
+        const date = `${today.getFullYear()}-0${today.getMonth() + 1}-${today.getDate()}`;
+
+        commentCounter += 1;
+        commnetNumber.innerHTML = `(${commentCounter})`;
+        commentDisplay.append(commnetNumber);
+        const singleComment = document.createElement('li');
+        const commentUser = `${addNameInput.value}`;
+        const commentContent = `${addCommentInput.value}`;
+        singleComment.innerHTML = `${date} ${commentUser} : ${commentContent}`;
+        commentList.append(singleComment);
+
+        commentForm.reset();
       };
     }
   });
@@ -244,7 +248,6 @@ export const renderMovies = async () => {
     commentButton.onclick = (e) => {
       e.preventDefault();
       renderMovieDetail(movie.show.id);
-      // renderMovieDetail(movie, movie.show.id);
     };
   });
 };
