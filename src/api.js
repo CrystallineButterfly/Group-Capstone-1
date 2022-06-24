@@ -9,7 +9,7 @@ const commentForm = document.createElement('form');
 commentForm.classList.add('comment-form');
 const commentTitle = document.createElement('h2');
 commentTitle.classList.add('comment-item');
-commentTitle.innerHTML = 'Add a comment';
+commentTitle.innerHTML = 'Add a comment: ';
 const addNameInput = document.createElement('input');
 addNameInput.classList.add('comment-item');
 addNameInput.placeholder = 'Your name';
@@ -88,21 +88,45 @@ export async function addComment(id) {
 export const renderMovieDetail = async (id) => {
   const movies = await getMovies();
   const comments = await getComments(id);
+  const projectDetailsPopupContainer = document.createElement('div');
+  projectDetailsPopupContainer.id = 'popup-container';
+
+  const projectDetailsPopupOverlay = document.createElement('div');
+  projectDetailsPopupOverlay.id = 'popup-overlay';
+  projectDetailsPopupOverlay.style.display = 'block';
+  projectDetailsPopupContainer.appendChild(projectDetailsPopupOverlay);
 
   const moviePopup = document.createElement('div');
-  moviePopup.innerHTML = '';
+  moviePopup.id = 'details-popup';
+  moviePopup.style.display = 'flex';
+  if (window.screen.width >= 768) {
+    moviePopup.style.top = `${window.pageYOffset + 77}px`;
+  } else {
+    moviePopup.style.top = `${window.pageYOffset + 16}px`;
+  }
+
+  const popupHeaderCloseButton = document.createElement('button');
+  popupHeaderCloseButton.id = 'popup-close-button';
+  popupHeaderCloseButton.innerHTML = 'Close';
+  moviePopup.appendChild(popupHeaderCloseButton);
+
   movies.forEach((movie) => {
     if (id === movie.show.id) {
-      const comedyMovie = document.createElement('div');
-      comedyMovie.classList.add('movie-div');
-      const comedyImage = document.createElement('img');
-      comedyImage.src = movie.show.image.medium;
-      const movieTitle = document.createElement('label');
-      movieTitle.innerHTML = `${movie.show.name}`;
-      const movieStatus = document.createElement('label');
-      movieStatus.innerHTML = `${movie.show.status}`;
-      const moviePremiered = document.createElement('label');
-      moviePremiered.innerHTML = `${movie.show.premiered}`;
+      const comedyDetailMovie = document.createElement('div');
+      comedyDetailMovie.classList.add('movie-div-detail');
+      const comedyDetailImage = document.createElement('img');
+      comedyDetailImage.classList.add('movie-image-detail');
+      comedyDetailImage.src = movie.show.image.original;
+
+      const comedyDetailcontainer = document.createElement('div');
+      comedyDetailcontainer.id = 'detail-container';
+
+      const movieDetailTitle = document.createElement('label');
+      movieDetailTitle.innerHTML = ` Title: ${movie.show.name}`;
+      const movieDetailStatus = document.createElement('label');
+      movieDetailStatus.innerHTML = `Status: ${movie.show.status}`;
+      const movieDetailPremiered = document.createElement('label');
+      movieDetailPremiered.innerHTML = `Premiered: ${movie.show.premiered}`;
 
       const commentDisplay = document.createElement('h2');
       commentDisplay.innerHTML = 'Comments';
@@ -126,30 +150,48 @@ export const renderMovieDetail = async (id) => {
         });
       }
 
-      comedyMovie.append(comedyImage);
-      comedyMovie.append(movieTitle);
-      comedyMovie.append(movieStatus);
-      comedyMovie.append(moviePremiered);
+      comedyDetailMovie.append(comedyDetailImage);
+      comedyDetailcontainer.append(movieDetailTitle);
+      comedyDetailcontainer.append(movieDetailStatus);
+      comedyDetailcontainer.append(movieDetailPremiered);
+      comedyDetailMovie.append(comedyDetailcontainer);
 
-      comedyMovie.append(commentDisplay);
-      comedyMovie.append(commentList);
+      comedyDetailMovie.append(commentDisplay);
+      comedyDetailMovie.append(commentList);
 
       commentForm.append(commentTitle);
       commentForm.append(addNameInput);
       commentForm.append(addCommentInput);
       commentForm.append(addCommentButton);
-      comedyMovie.append(commentForm);
+      comedyDetailMovie.append(commentForm);
 
-      moviePopup.append(comedyMovie);
+      moviePopup.append(comedyDetailMovie);
+      projectDetailsPopupContainer.appendChild(moviePopup);
 
-      document.body.append(moviePopup);
+      document.body.append(projectDetailsPopupContainer);
+      popupHeaderCloseButton.onclick = (e) => {
+        e.preventDefault();
+        projectDetailsPopupContainer.remove();
+      };
+      addCommentButton.onclick = (e) => {
+        e.preventDefault();
+        addComment(id);
+
+        const today = new Date();
+        const date = `${today.getFullYear()}-0${today.getMonth() + 1}-${today.getDate()}`;
+
+        commentCounter += 1;
+        commnetNumber.innerHTML = `(${commentCounter})`;
+        commentDisplay.append(commnetNumber);
+        const singleComment = document.createElement('li');
+        const commentUser = `${addNameInput.value}`;
+        const commentContent = `${addCommentInput.value}`;
+        singleComment.innerHTML = `${date} ${commentUser} : ${commentContent}`;
+        commentList.append(singleComment);
+
+        commentForm.reset();
+      };
     }
-
-    addCommentButton.onclick = (e) => {
-      e.preventDefault();
-      addComment(movie.show.id);
-      commentForm.reset();
-    };
   });
 };
 
@@ -163,16 +205,17 @@ export const renderMovies = async () => {
     counter += 1;
     moviesSpan.innerHTML = `(${counter})`;
 
-    let numLikes = '';
+    let numLikes = 0;
     likes.forEach((like) => {
       if (movie.show.id === like.item_id) {
         numLikes = `${like.likes}`;
       }
     });
     const comedyMovie = document.createElement('div');
-    const movieTitle = document.createElement('label');
-    movieTitle.innerHTML = `${movie.show.name}`;
     comedyMovie.classList.add('movie-div');
+    const movieTitle = document.createElement('label');
+    movieTitle.classList.add('movie-title');
+    movieTitle.innerHTML = `${movie.show.name}`;
     const likeIcon = document.createElement('i');
     likeIcon.id = movie.show.id;
     likeIcon.classList.add('fas');
@@ -182,6 +225,7 @@ export const renderMovies = async () => {
     likeLabel.classList.add('like-label');
     likeLabel.innerHTML = `${numLikes} likes`;
     const comedyImage = document.createElement('img');
+    comedyImage.classList.add('comedy-image');
     comedyImage.src = movie.show.image.medium;
     const commentButton = document.createElement('button');
     commentButton.classList.add('comment-button');
@@ -193,18 +237,13 @@ export const renderMovies = async () => {
     comedyMovie.append(likeLabel);
     comedyMovie.append(commentButton);
     displayMovies.append(comedyMovie);
+    let newNumLikes;
     likeIcon.onclick = (e) => {
       e.preventDefault();
       addLike(movie.show.id);
-      const newLikes = likes;
-      let newNumLikes = '';
-      newLikes.forEach((newLike) => {
-        if (movie.show.id === newLike.item_id) {
-          newNumLikes = `${newLike.likes}`;
-        }
-      });
-      likeLabel.innerHTML = `${newNumLikes}likes`;
-      window.location.reload();
+      newNumLikes = Number(numLikes) + 1;
+      likeLabel.innerHTML = `${newNumLikes} likes`;
+      numLikes = newNumLikes;
     };
     commentButton.onclick = (e) => {
       e.preventDefault();
